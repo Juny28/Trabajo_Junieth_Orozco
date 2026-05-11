@@ -1,0 +1,41 @@
+### Obtener todas las peliculas
+GET http://localhost:8080/api/v1/films/?size=2&page=0&sort=releaseDate,desc
+
+### Insertar nueva pelicula
+POST http://localhost:8080/api/v1/films/
+Content-Type: application/json
+
+{
+    "filmName": "Star wars III",
+    "releaseDate": "2004-01-01"
+}
+
+### Obtener todas las peliculas entre dos fechas
+GET http://localhost:8080/api/v1/films/release_date?fromDate=1971-01-01&toDate=2000-01-01&size=1&page=1&sort=releaseDate,desc
+
+### Obtener pelicula por id
+GET http://localhost:8080/api/v1/films/3
+
+
+### Editar pelicula completa
+PUT http://localhost:8080/api/v1/films/3
+Content-Type: application/json
+
+{
+    "filmName": "Star wars III - La venganza de los Sith",
+    "releaseDate": "2005-05-19"
+}
+
+### Editar solo el nombre de la pelicula
+PATCH http://localhost:8080/api/v1/films/6
+Content-Type: application/json
+
+{
+    "name": "Star Wars III - La venganza de los Sith"
+}
+
+### Eliminar pelicula por id
+DELETE http://localhost:8080/api/v1/films/4
+
+### Obtener pelicula por id (caso opcional)
+GET http://localhost:8080/api/v1/films/optional/9
