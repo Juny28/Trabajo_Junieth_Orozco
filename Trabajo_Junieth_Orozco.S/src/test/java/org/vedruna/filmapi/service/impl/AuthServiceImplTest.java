@@ -68,7 +68,8 @@ public class AuthServiceImplTest {
     void register_ShouldThrowException_WhenUsernameExists() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(new User()));
 
-        assertThrows(RuntimeException.class, () -> authService.register(registrationDto));
+        assertThrows(org.vedruna.filmapi.exception.UsernameAlreadyExistsException.class, 
+            () -> authService.register(registrationDto));
     }
 
     @Test
@@ -76,6 +77,36 @@ public class AuthServiceImplTest {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(new User()));
 
-        assertThrows(RuntimeException.class, () -> authService.register(registrationDto));
+        assertThrows(org.vedruna.filmapi.exception.EmailAlreadyExistsException.class, 
+            () -> authService.register(registrationDto));
+    }
+
+    @Test
+    void register_ShouldThrowException_WhenRoleNotFound() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.empty());
+        when(rolRepository.findByName("USER")).thenReturn(Optional.empty());
+
+        assertThrows(org.vedruna.filmapi.exception.RoleNotFoundException.class, 
+            () -> authService.register(registrationDto));
+    }
+
+    @Test
+    void login_ShouldReturnToken_WhenCredentialsValid() {
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password");
+
+        org.springframework.security.core.userdetails.UserDetails userDetails = 
+            mock(org.springframework.security.core.userdetails.UserDetails.class);
+        
+        when(userDetailsService.loadUserByUsername("testuser")).thenReturn(userDetails);
+        when(jwtUtils.generateToken(userDetails)).thenReturn("token123");
+
+        var response = authService.login(loginDto);
+
+        assertNotNull(response);
+        assertEquals("token123", response.getToken());
+        verify(authenticationManager).authenticate(any());
     }
 }
