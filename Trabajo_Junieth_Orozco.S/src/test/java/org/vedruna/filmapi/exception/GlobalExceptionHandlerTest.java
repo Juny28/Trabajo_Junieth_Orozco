@@ -15,7 +15,7 @@ public class GlobalExceptionHandlerTest {
         ProblemDetail result = handler.handleFilmapiException(ex);
         
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getStatus());
-        assertEquals("User 'user' not found", result.getDetail());
+        assertEquals("User not found: user", result.getDetail());
     }
 
     @Test

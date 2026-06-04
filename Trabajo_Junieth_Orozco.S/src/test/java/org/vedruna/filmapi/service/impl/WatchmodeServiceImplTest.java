@@ -141,7 +141,7 @@ public class WatchmodeServiceImplTest {
 
     @Test
     void searchTitles_ShouldReturnEmpty_WhenApiFails() {
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class), any()))
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(ParameterizedTypeReference.class), any(Object[].class)))
             .thenThrow(new RuntimeException("API error"));
 
         List<TitleDto> results = watchmodeService.searchTitles("Error");

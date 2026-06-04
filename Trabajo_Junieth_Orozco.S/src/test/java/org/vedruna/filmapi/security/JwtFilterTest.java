@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,10 +26,15 @@ public class JwtFilterTest {
     private JwtUtils jwtUtils;
 
     @Mock
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @InjectMocks
     private JwtFilter jwtFilter;
+
+    @BeforeEach
+    void setUp() {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
 
     @Test
     void doFilterInternal_ShouldAuthenticate_WhenTokenIsValid() throws ServletException, IOException {
