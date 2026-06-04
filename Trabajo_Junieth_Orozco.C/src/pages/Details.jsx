@@ -10,9 +10,9 @@ import { watchmodeService } from '../services/watchmodeService';
 import { useApp } from '../context/AppContext';
 
 /**
- * Details component showing extended information for a title.
- * @param {Object} props - Component props.
- * @param {number} props.id - The title ID.
+ * Componente que muestra la información detallada de una película o serie.
+ * @param {Object} props - Propiedades del componente.
+ * @param {string} props.id - El ID de Watchmode del título.
  * @returns {JSX.Element}
  */
 const GetDetails = ({ id }) => {

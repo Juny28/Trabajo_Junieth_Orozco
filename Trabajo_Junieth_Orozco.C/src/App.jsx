@@ -7,6 +7,7 @@ import AllTitles from './pages/AllTitles';
 import Favorites from './pages/Favorites';
 import Details from './pages/Details';
 import MyPlatforms from './pages/MyPlatforms';
+import Login from './pages/Login';
 
 /**
  * Main App component with routing and global context.
@@ -25,6 +26,7 @@ function App() {
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/details/:id" element={<Details />} />
               <Route path="/myplatforms" element={<MyPlatforms />} />
+              <Route path="/login" element={<Login />} />
             </Routes>
           </main>
         </div>

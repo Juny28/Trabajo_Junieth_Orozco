@@ -8,4 +8,5 @@ import java.util.Optional;
 @Repository
 public interface TitleRepository extends JpaRepository<Title, Long> {
     Optional<Title> findByWatchmodeId(Integer watchmodeId);
+    java.util.List<Title> findByTitleContainingIgnoreCase(String title);
 }

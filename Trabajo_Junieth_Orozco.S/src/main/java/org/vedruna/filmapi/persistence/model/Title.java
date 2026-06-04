@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
+/**
+ * Entidad que representa una película o serie de televisión.
+ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -28,6 +31,9 @@ public class Title {
 
     @Column(nullable = false)
     private String genre;
+
+    @Column
+    private String poster;
 
     @OneToMany(mappedBy = "title", cascade = CascadeType.ALL)
     private List<Review> reviews;

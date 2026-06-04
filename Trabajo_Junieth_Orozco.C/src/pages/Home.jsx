@@ -5,8 +5,11 @@ import { watchmodeService } from '../services/watchmodeService';
 import GetMediaCard from '../components/GetMediaCard';
 
 /**
- * Home page with search functionality and trending titles.
- * @returns {JSX.Element}
+ * Home component that serves as the landing page of the application.
+ * It features a hero section with a search bar and a display of 
+ * trending/popular titles using react-query for data fetching.
+ * 
+ * @returns {JSX.Element} The rendered Home page.
  */
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,16 +18,20 @@ const Home = () => {
   // Fetch popular titles
   const { data: popularTitles, isLoading: loadingPopular, error: errorPopular } = useQuery({
     queryKey: ['popular'],
-    queryFn: watchmodeService.getPopular,
+    queryFn: () => watchmodeService.getPopular(1),
   });
 
   // Fetch search results
   const { data: searchResults, isLoading: loadingSearch, error: errorSearch } = useQuery({
     queryKey: ['search', searchQuery],
-    queryFn: () => watchmodeService.searchTitles(searchQuery),
+    queryFn: () => watchmodeService.searchTitles(searchQuery, 1),
     enabled: searchQuery.length > 2,
   });
 
+  /**
+   * Handles the search form submission.
+   * @param {React.FormEvent} e - The form event.
+   */
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.length > 2) {

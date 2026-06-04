@@ -6,6 +6,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entidad que representa a un usuario del sistema filmapi.
+ * Gestiona sus credenciales, rol, reseñas creadas y favoritos.
+ */
 @Data
 @NoArgsConstructor
 @Entity

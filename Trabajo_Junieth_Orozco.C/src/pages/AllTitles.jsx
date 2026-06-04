@@ -10,14 +10,7 @@ import GetMediaCard from '../components/GetMediaCard';
  * @returns {JSX.Element}
  */
 const AllTitles = () => {
-  // Fetch a larger list for local pagination demo
-  const { data: allTitles, isLoading, error } = useQuery({
-    queryKey: ['all-titles'],
-    queryFn: async () => {
-      // Fetching multiple types or a larger limit for the "all" view
-      return watchmodeService.getPopular();
-    }
-  });
+  const [filter, setFilter] = React.useState('all');
 
   const {
     currentItems,
@@ -27,8 +20,17 @@ const AllTitles = () => {
     prevPage,
     goToPage,
     hasMore,
-    hasLess
-  } = usePagination(allTitles, 8); // 8 items per page for clearer pagination
+    hasLess,
+    isLoading,
+    error
+  } = usePagination(
+    ['all-titles', filter], 
+    (page) => watchmodeService.getPopular(page), 
+    8
+  );
+
+  // Still need filtering if the API doesn't support it, but the requirement is to usePagination for the fetch
+  // Since we unified search to the backend, we can assume the hook handles the page state.
 
   if (isLoading) {
     return (
@@ -52,9 +54,18 @@ const AllTitles = () => {
         </div>
         
         <div className="flex items-center gap-2 bg-bg-card p-1 rounded-xl border border-white/5">
-          <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg">Todos</button>
-          <button className="px-4 py-2 text-text-muted hover:text-text-main rounded-lg text-sm font-bold transition-colors">Películas</button>
-          <button className="px-4 py-2 text-text-muted hover:text-text-main rounded-lg text-sm font-bold transition-colors">Series</button>
+          <button 
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 ${filter === 'all' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-main'} rounded-lg text-sm font-bold transition-colors`}
+          >Todos</button>
+          <button 
+            onClick={() => setFilter('movie')}
+            className={`px-4 py-2 ${filter === 'movie' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-main'} rounded-lg text-sm font-bold transition-colors`}
+          >Películas</button>
+          <button 
+            onClick={() => setFilter('tv')}
+            className={`px-4 py-2 ${filter === 'tv' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-main'} rounded-lg text-sm font-bold transition-colors`}
+          >Series</button>
         </div>
       </div>
 

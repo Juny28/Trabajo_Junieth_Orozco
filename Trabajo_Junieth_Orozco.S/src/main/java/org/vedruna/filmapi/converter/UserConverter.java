@@ -5,6 +5,9 @@ import org.vedruna.filmapi.dto.UserDto;
 import org.vedruna.filmapi.persistence.model.User;
 import java.util.stream.Collectors;
 
+/**
+ * Conversor para mapear entre la entidad User y UserDto.
+ */
 @Component
 public class UserConverter {
     private final TitleConverter titleConverter;

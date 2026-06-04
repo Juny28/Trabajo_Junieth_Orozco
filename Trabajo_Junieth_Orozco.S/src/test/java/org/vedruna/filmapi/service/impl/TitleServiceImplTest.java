@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,5 +69,25 @@ public class TitleServiceImplTest {
 
         assertFalse(user.getFavorites().contains(title));
         verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void searchTitles_ShouldPrioritizeApiResults_WhenApiReturnsData() {
+        String name = "Inception";
+        List<TitleDto> apiResults = new ArrayList<>();
+        TitleDto dto = new TitleDto();
+        dto.setTitle("Inception");
+        apiResults.add(dto);
+
+        // When API results are found
+        when(watchmodeService.searchTitles(name)).thenReturn(apiResults);
+
+        List<TitleDto> result = titleService.searchTitles(name);
+
+        // It should return API results and NOT call the database search
+        assertEquals(1, result.size());
+        assertEquals("Inception", result.get(0).getTitle());
+        verify(titleRepository, never()).findByTitleContainingIgnoreCase(any());
+        verify(titleRepository, never()).findAll();
     }
 }

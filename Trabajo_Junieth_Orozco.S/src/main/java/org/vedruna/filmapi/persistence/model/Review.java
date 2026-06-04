@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entidad que representa una reseña creada por un usuario para un título (película/serie).
+ * Contiene el texto y la puntuación.
+ */
 @Data
 @NoArgsConstructor
 @Entity

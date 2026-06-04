@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entidad que representa un rol de usuario (ej. USER, ADMIN).
+ */
 @Data
 @NoArgsConstructor
 @Entity

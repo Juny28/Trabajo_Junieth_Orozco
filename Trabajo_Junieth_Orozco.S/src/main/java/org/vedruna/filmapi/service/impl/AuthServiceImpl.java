@@ -12,6 +12,9 @@ import org.vedruna.filmapi.persistence.model.Rol;
 import org.vedruna.filmapi.persistence.model.User;
 import org.vedruna.filmapi.persistence.repository.RolRepository;
 import org.vedruna.filmapi.persistence.repository.UserRepository;
+import org.vedruna.filmapi.exception.UsernameAlreadyExistsException;
+import org.vedruna.filmapi.exception.EmailAlreadyExistsException;
+import org.vedruna.filmapi.exception.RoleNotFoundException;
 import org.vedruna.filmapi.security.JwtUtils;
 import org.vedruna.filmapi.security.UserDetailsServiceImpl;
 import org.vedruna.filmapi.service.AuthService;
@@ -19,7 +22,7 @@ import org.vedruna.filmapi.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service implementation for authentication and registration.
+ * Implementación del servicio para autenticación y registro de usuarios.
  */
 @Slf4j
 @Service
@@ -50,11 +53,11 @@ public class AuthServiceImpl implements AuthService {
         log.info("Attempting to register user: {}", registrationDto.getUsername());
         if (userRepository.findByUsername(registrationDto.getUsername()).isPresent()) {
             log.warn("Username {} already exists", registrationDto.getUsername());
-            throw new RuntimeException("Username already exists");
+            throw new UsernameAlreadyExistsException(registrationDto.getUsername());
         }
         if (userRepository.findByEmail(registrationDto.getEmail()).isPresent()) {
             log.warn("Email {} already exists", registrationDto.getEmail());
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException(registrationDto.getEmail());
         }
 
         User user = new User();
@@ -63,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         
         Rol userRole = rolRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Default role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("USER"));
         user.setRole(userRole);
 
         userRepository.save(user);

@@ -4,6 +4,9 @@ import org.springframework.stereotype.Component;
 import org.vedruna.filmapi.dto.ReviewDto;
 import org.vedruna.filmapi.persistence.model.Review;
 
+/**
+ * Conversor para mapear entre la entidad Review y ReviewDto.
+ */
 @Component
 public class ReviewConverter {
     public ReviewDto toDto(Review review) {

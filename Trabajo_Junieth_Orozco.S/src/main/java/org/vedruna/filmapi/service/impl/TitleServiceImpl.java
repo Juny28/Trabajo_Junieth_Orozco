@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service implementation for managing titles and user favorites.
+ * Implementación del servicio para gestionar títulos (películas/series) y los favoritos de los usuarios.
  */
 @Slf4j
 @Service
@@ -42,8 +42,31 @@ public class TitleServiceImpl implements TitleService {
      */
     @Override
     public List<TitleDto> searchTitles(String name) {
-        log.info("Searching for titles with name: {}", name);
-        return watchmodeService.searchTitles(name);
+        log.info("Searching for titles with name: '{}'", name);
+        
+        // Prioritize Watchmode API to get fresh results
+        List<TitleDto> apiResults = new java.util.ArrayList<>();
+        try {
+            apiResults = watchmodeService.searchTitles(name);
+        } catch (Exception e) {
+            log.warn("Watchmode API search failed: {}", e.getMessage());
+        }
+
+        if (!apiResults.isEmpty()) {
+            log.info("Returning {} results from Watchmode API", apiResults.size());
+            return apiResults;
+        }
+
+        // Fallback to local database if API returned nothing or failed
+        log.info("No API results, falling back to local database for: '{}'", name);
+        List<Title> localTitles;
+        if (name == null || name.trim().isEmpty()) {
+            localTitles = titleRepository.findAll();
+        } else {
+            localTitles = titleRepository.findByTitleContainingIgnoreCase(name);
+        }
+
+        return localTitles.stream().map(titleConverter::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -58,7 +81,7 @@ public class TitleServiceImpl implements TitleService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("User {} not found", username);
-                    return new RuntimeException("User not found");
+                    return new org.vedruna.filmapi.exception.UserNotFoundException(username);
                 });
         
         Title title = java.util.Objects.requireNonNull(titleRepository.findByWatchmodeId(watchmodeId)
@@ -67,7 +90,7 @@ public class TitleServiceImpl implements TitleService {
                     TitleDto details = watchmodeService.getTitleDetails(watchmodeId);
                     if (details == null) {
                         log.error("Title {} not found in Watchmode API", watchmodeId);
-                        throw new RuntimeException("Title not found in Watchmode");
+                        throw new org.vedruna.filmapi.exception.TitleNotFoundException(String.valueOf(watchmodeId));
                     }
                     return titleRepository.save(titleConverter.toEntity(details));
                 }));
@@ -91,12 +114,12 @@ public class TitleServiceImpl implements TitleService {
     public void removeFavorite(String username, Integer watchmodeId) {
         log.info("Removing title {} from favorites of user {}", watchmodeId, username);
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.UserNotFoundException(username));
         
         Title title = titleRepository.findByWatchmodeId(watchmodeId)
                 .orElseThrow(() -> {
                     log.error("Title {} not found in local database", watchmodeId);
-                    return new RuntimeException("Title not found in favorites");
+                    return new org.vedruna.filmapi.exception.TitleNotFoundException("Title not found in favorites: " + watchmodeId);
                 });
 
         user.getFavorites().remove(title);
@@ -113,7 +136,7 @@ public class TitleServiceImpl implements TitleService {
     public List<TitleDto> getUserFavorites(String username) {
         log.info("Fetching favorites for user: {}", username);
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.UserNotFoundException(username));
         return user.getFavorites().stream().map(titleConverter::toDto).collect(Collectors.toList());
     }
 }

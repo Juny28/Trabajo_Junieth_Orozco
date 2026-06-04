@@ -1,8 +1,15 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Smartphone, CheckCircle2, Plus, Loader2 } from 'lucide-react';
-import { watchmodeService } from '../services/watchmodeService';
+import { Smartphone, CheckCircle2, Plus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+
+// Static list of popular streaming platforms
+const PLATFORMS = [
+  { id: 203, name: 'Netflix', type: 'subscription', color: '#E50914' },
+  { id: 26,  name: 'Amazon Prime Video', type: 'subscription', color: '#00A8E0' },
+  { id: 387, name: 'Disney+', type: 'subscription', color: '#113CCF' },
+  { id: 372, name: 'Apple TV+', type: 'subscription', color: '#555555' },
+  { id: 444, name: 'HBO Max', type: 'subscription', color: '#5822B4' },
+]
 
 /**
  * MyPlatforms page to select and manage user's subscribed platforms.
@@ -11,11 +18,11 @@ import { useApp } from '../context/AppContext';
 const MyPlatforms = () => {
   const { platforms, updatePlatforms } = useApp();
 
-  const { data: allPlatforms, isLoading, error } = useQuery({
-    queryKey: ['platforms'],
-    queryFn: watchmodeService.getPlatforms,
-  });
-
+  /**
+   * Toggles the selection of a streaming platform.
+   * Adds the platform ID to the global context if not present, otherwise removes it.
+   * @param {number} platformId - The unique ID of the platform (Watchmode source_id).
+   */
   const togglePlatform = (platformId) => {
     if (platforms.includes(platformId)) {
       updatePlatforms(platforms.filter(id => id !== platformId));
@@ -23,19 +30,6 @@ const MyPlatforms = () => {
       updatePlatforms([...platforms, platformId]);
     }
   };
-
-  // Filter some popular platforms for the UI if too many are returned
-  const popularSourceIds = [203, 157, 26, 387, 372, 371, 444];
-  const displayPlatforms = allPlatforms?.filter(p => popularSourceIds.includes(p.id)) || [];
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
-        <p className="text-text-muted">Cargando plataformas disponibles...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="container animate-fade-in">
@@ -51,7 +45,7 @@ const MyPlatforms = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {displayPlatforms.map((platform) => {
+          {PLATFORMS.map((platform) => {
             const isSelected = platforms.includes(platform.id);
             return (
               <button
@@ -64,9 +58,10 @@ const MyPlatforms = () => {
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm ${
-                    isSelected ? 'bg-primary text-white' : 'bg-white/5 text-text-muted'
-                  }`}>
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm text-white"
+                    style={{ backgroundColor: platform.color }}
+                  >
                     {platform.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
@@ -101,3 +96,5 @@ const MyPlatforms = () => {
 };
 
 export default MyPlatforms;
+
+

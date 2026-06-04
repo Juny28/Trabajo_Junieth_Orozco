@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service implementation for managing reviews.
+ * Implementación del servicio para la gestión de reseñas de los usuarios.
  */
 @Slf4j
 @Service
@@ -54,10 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> getReviewsByTitle(Integer watchmodeId) {
         log.info("Fetching reviews for title: {}", watchmodeId);
         Title title = titleRepository.findByWatchmodeId(watchmodeId)
-                .orElseThrow(() -> {
-                    log.error("Title {} not found", watchmodeId);
-                    return new RuntimeException("Title not found");
-                });
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.TitleNotFoundException(watchmodeId));
         return reviewRepository.findByTitle(title).stream()
                 .map(reviewConverter::toDto)
                 .collect(Collectors.toList());
@@ -73,13 +70,13 @@ public class ReviewServiceImpl implements ReviewService {
     public void createReview(String username, ReviewCreateDto reviewDto) {
         log.info("User {} is creating a review for title {}", username, reviewDto.getWatchmodeId());
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.UserNotFoundException(username));
         
         Title title = titleRepository.findByWatchmodeId(reviewDto.getWatchmodeId())
                 .orElseGet(() -> {
                     log.info("Title {} not in local database, fetching from Watchmode", reviewDto.getWatchmodeId());
                     TitleDto details = watchmodeService.getTitleDetails(reviewDto.getWatchmodeId());
-                    if (details == null) throw new RuntimeException("Title not found in Watchmode");
+                    if (details == null) throw new org.vedruna.filmapi.exception.TitleNotFoundException(reviewDto.getWatchmodeId());
                     return titleRepository.save(titleConverter.toEntity(details));
                 });
 
@@ -103,11 +100,11 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateReview(String username, Long reviewId, ReviewCreateDto reviewDto) {
         log.info("User {} is updating review {}", username, reviewId);
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.ReviewNotFoundException(reviewId));
         
         if (!review.getUser().getUsername().equals(username)) {
             log.error("User {} is not authorized to edit review {}", username, reviewId);
-            throw new RuntimeException("Unauthorized to edit this review");
+            throw new org.vedruna.filmapi.exception.UnauthorizedActionException("edit", "review");
         }
 
         review.setText(reviewDto.getText());
@@ -126,11 +123,11 @@ public class ReviewServiceImpl implements ReviewService {
     public void deleteReview(String username, Long reviewId) {
         log.info("User {} is deleting review {}", username, reviewId);
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
+                .orElseThrow(() -> new org.vedruna.filmapi.exception.ReviewNotFoundException(reviewId));
         
         if (!review.getUser().getUsername().equals(username)) {
             log.error("User {} is not authorized to delete review {}", username, reviewId);
-            throw new RuntimeException("Unauthorized to delete this review");
+            throw new org.vedruna.filmapi.exception.UnauthorizedActionException("delete", "review");
         }
 
         reviewRepository.delete(review);

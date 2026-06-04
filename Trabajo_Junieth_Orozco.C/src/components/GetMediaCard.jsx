@@ -22,9 +22,13 @@ const GetMediaCard = ({ title }) => {
     <div className="bg-bg-card rounded-2xl overflow-hidden group hover:scale-[1.02] transition-transform duration-300 border border-white/5 shadow-xl">
       <div className="relative aspect-[2/3] overflow-hidden">
         <img 
-          src={title.poster || `https://via.placeholder.com/400x600?text=${encodeURIComponent(name)}`} 
+          src={title.poster || `https://placehold.co/400x600/1e293b/a855f7?text=${encodeURIComponent(name)}`} 
           alt={name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src=`https://placehold.co/400x600/1e293b/a855f7?text=${encodeURIComponent(name)}`;
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = 'YOUR_WATCHMODE_API_KEY';
+const API_KEY = import.meta.env.VITE_WATCHMODE_API_KEY || 'YOUR_WATCHMODE_API_KEY';
 const BASE_URL = 'https://api.watchmode.com/v1';
 
 const apiClient = axios.create({
@@ -17,13 +17,12 @@ export const watchmodeService = {
   /**
    * Search for titles by name.
    * @param {string} query - The search query.
+   * @param {number} [page=1] - Page number.
    * @returns {Promise<Array>} List of titles.
    */
-  searchTitles: async (query) => {
-    const { data } = await apiClient.get('/search/', {
-      params: { search_field: 'name', search_value: query },
-    });
-    return data.title_results || [];
+  searchTitles: async (query, page = 1) => {
+    const { data } = await axios.get(`http://localhost:8080/titles/search?name=${query}&page=${page}&limit=8`);
+    return data;
   },
 
   /**
@@ -32,6 +31,11 @@ export const watchmodeService = {
    * @returns {Promise<Object>} Title details.
    */
   getDetails: async (id) => {
+    // We can still call Watchmode directly for details to reduce backend load if preferred,
+    // or call backend if we want to sync with DB.
+    // The requirement says: (GET) /titles/{watchmodeId}/reviews (Public)
+    // and (GET) /titles/search?name=... (Private)
+    // I'll keep the direct API call for details for speed, but use backend for search.
     const { data } = await apiClient.get(`/title/${id}/details/`, {
       params: { append_to_response: 'sources' },
     });
@@ -40,13 +44,12 @@ export const watchmodeService = {
 
   /**
    * Get trending/popular titles.
+   * @param {number} [page=1] - Page number.
    * @returns {Promise<Array>} List of popular titles.
    */
-  getPopular: async () => {
-    const { data } = await apiClient.get('/list-titles/', {
-      params: { limit: 20, sort: 'relevance_desc' },
-    });
-    return data.titles || [];
+  getPopular: async (page = 1) => {
+    const { data } = await axios.get(`http://localhost:8080/titles/search?name=&page=${page}&limit=8`);
+    return data;
   },
 
   /**

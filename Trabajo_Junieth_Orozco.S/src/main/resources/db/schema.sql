@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `titles` (
   `type` VARCHAR(45) NOT NULL,
   `year` INT NOT NULL,
   `genre` VARCHAR(100) NOT NULL,
+  `poster` VARCHAR(255) NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `watchmode_id_UNIQUE` (`watchmode_id` ASC)
 ) ENGINE = InnoDB;

@@ -21,7 +21,10 @@ public class TitleController {
     }
 
     @GetMapping("/search")
-    public List<TitleDto> search(@RequestParam String name) {
+    public List<TitleDto> search(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "8") int limit) {
         return titleService.searchTitles(name);
     }
 }
