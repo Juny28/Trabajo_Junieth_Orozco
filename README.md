@@ -85,14 +85,45 @@ npm run dev
 ```
 
 ---
+## 🏃 Ejecución y Comandos
 
-## 🧪 Testing y Calidad
+### Backend (Java/Spring Boot)
+Ubícate en la carpeta `Trabajo_Junieth_Orozco.S/`:
 
-Para ejecutar los tests de Mockito en el backend:
-```bash
-cd Trabajo_Junieth_Orozco.S
-./mvnw test
-```
+- **Iniciar Servidor**:
+  ```bash
+  ./mvnw spring-boot:run
+  ```
+- **Ejecutar Tests (Mockito)**:
+  ```bash
+  ./mvnw test
+  ```
+- **Generar Reporte de Cobertura (JaCoCo)**:
+  ```bash
+  ./mvnw jacoco:report
+  ```
+  *El reporte se genera en `target/site/jacoco/index.html`.*
+
+### Frontend (React/Vite)
+Ubícate en la carpeta `Trabajo_Junieth_Orozco.C/`:
+
+- **Instalar Dependencias**:
+  ```bash
+  npm install
+  ```
+- **Iniciar en Desarrollo**:
+  ```bash
+  npm run dev
+  ```
+
+---
+
+## 🧪 Calidad del Código (TFG Metrics)
+
+Contamos con una arquitectura sólida y verificada:
+- ✅ **Cobertura de Código**: **80.6%** (Línea final alcanzada a través de Mockito).
+- ✅ **Documentación**: Javadoc y Swagger integrados.
+- ✅ **GitFlow**: Flujo de trabajo profesional en ramas `main` y `develop`.
 
 ---
 
